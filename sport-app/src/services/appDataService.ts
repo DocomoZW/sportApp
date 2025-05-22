@@ -1,4 +1,4 @@
-import { ref, get, child, set } from 'firebase/database'; // Added 'set'
+import { ref, get, child, set } from 'firebase/database';
 import { database } from '@/lib/firebase';
 import {
   Student,
@@ -9,9 +9,10 @@ import {
   Session,
   SessionFirebaseData,
   Selections,
-  StudentSelection, // Explicitly import StudentSelection if used in function signature
+  StudentSelection,
   DayOfWeek
 } from '@/lib/types';
+import { getSportIconCmp } from '@/lib/sportIconMapping'; // Import the icon mapping function
 
 // Helper function to map category strings to SportCategoryName
 const mapCategoryStringToEnum = (categoryStr: string): SportCategoryName => {
@@ -26,13 +27,13 @@ const mapCategoryStringToEnum = (categoryStr: string): SportCategoryName => {
       return 'Yellow';
     default:
       console.warn(`Unknown category string: ${categoryStr}, defaulting to Yellow.`);
-      return 'Yellow'; // Defaulting to Yellow as per example
+      return 'Yellow';
   }
 };
 
 // Helper function to map day strings to DayOfWeek type
 const mapDayStringToEnum = (dayStr: string): DayOfWeek => {
-  if (!dayStr) { // Handle null or undefined dayStr
+  if (!dayStr) {
     console.warn(`Received null or undefined day string, defaulting to Monday.`);
     return 'Monday';
   }
@@ -41,7 +42,7 @@ const mapDayStringToEnum = (dayStr: string): DayOfWeek => {
     return capitalizedDay as DayOfWeek;
   }
   console.warn(`Unknown day string: ${dayStr}, defaulting to Monday.`);
-  return 'Monday'; // Or handle as an error / default more appropriately
+  return 'Monday';
 };
 
 export const getStudents = async (): Promise<Student[]> => {
@@ -76,11 +77,11 @@ export const getActivities = async (): Promise<Sport[]> => {
         console.warn("Activities data is null or undefined from Firebase.");
         return [];
       }
-      return Object.entries(activitiesData).map(([id, activity]) => ({
-        ...activity,
+      return Object.entries(activitiesData).map(([id, activityData]) => ({
+        ...activityData, // Spread the original data
         id,
-        category: mapCategoryStringToEnum(activity.category),
-        Icon: undefined,
+        category: mapCategoryStringToEnum(activityData.category),
+        Icon: getSportIconCmp(activityData), // Assign the icon component
       }));
     }
     console.log("No activities data found at /activities path.");
@@ -157,13 +158,10 @@ export const saveStudentSelections = async (studentId: string, selections: Stude
   }
   try {
     const selectionsRef = ref(database, `selections/${studentId}`);
-    await set(selectionsRef, selections); // Using the ref function from firebase/database
+    await set(selectionsRef, selections);
     console.log(`Selections saved for student ${studentId}:`, selections);
   } catch (error) {
     console.error(`Error saving selections for student ${studentId}:`, error);
-    return Promise.reject(error); // Ensure this rejects the promise on error
+    return Promise.reject(error);
   }
 };
-
-// Example usage (optional, for testing during development)
-// ... (existing example usage comments)

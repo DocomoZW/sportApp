@@ -14,13 +14,21 @@ export default function SportCard({ sport, isSelected, onToggleSelect }: SportCa
     onToggleSelect(sport.id, event.target.checked);
   };
 
+  const IconCmp = sport.Icon; // Get the icon component from the sport object
+
   return (
     <div className={`p-4 border rounded-lg shadow-sm transition-all duration-200 ease-in-out 
                     ${isSelected ? 'bg-blue-50 border-blue-300 ring-2 ring-blue-200' : 'bg-white hover:shadow-md'}`}>
       <div className="flex items-center space-x-3">
-        {/* Placeholder for Sport Icon */}
-        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-sm">
-          Icon
+        {/* Render Sport Icon if IconCmp exists */}
+        <div className="w-10 h-10 rounded-full flex items-center justify-center 
+                        ${isSelected ? 'bg-blue-100' : 'bg-gray-100'} 
+                        text-gray-600 ${isSelected ? 'text-blue-600' : 'text-gray-500'}`}>
+          {IconCmp ? (
+            <IconCmp className="w-6 h-6" /> // Adjust size as needed, e.g., w-6 h-6 or w-8 h-8
+          ) : (
+            <span className="text-sm">Icon</span> // Fallback text if no icon component
+          )}
         </div>
 
         <div className="flex-grow">
